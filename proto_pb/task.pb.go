@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// User attributes
 type User struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -83,6 +84,7 @@ func (x *User) GetPhone() int64 {
 	return 0
 }
 
+// User Request
 type UserReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -130,6 +132,7 @@ func (x *UserReq) GetUser() *User {
 	return nil
 }
 
+// User Response
 type UserRes struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -177,6 +180,7 @@ func (x *UserRes) GetResult() string {
 	return ""
 }
 
+// User Update Request
 type UpdateReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -224,6 +228,7 @@ func (x *UpdateReq) GetUser() *User {
 	return nil
 }
 
+// User Activity Attributes
 type Activity struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -303,6 +308,7 @@ func (x *Activity) GetName() string {
 	return ""
 }
 
+// User Activity Request
 type ActivityReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -350,6 +356,7 @@ func (x *ActivityReq) GetActivity() *Activity {
 	return nil
 }
 
+// User Acivity Response
 type ActivityRes struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -397,6 +404,7 @@ func (x *ActivityRes) GetResult() string {
 	return ""
 }
 
+// Activity Validation Request
 type IsValidReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -452,6 +460,7 @@ func (x *IsValidReq) GetActivityType() string {
 	return ""
 }
 
+// Activity Validation Response
 type IsValidRes struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -499,6 +508,7 @@ func (x *IsValidRes) GetResult() string {
 	return ""
 }
 
+// Activity status request
 type IsDoneReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -554,6 +564,7 @@ func (x *IsDoneReq) GetActivityType() string {
 	return ""
 }
 
+// Activity status response
 type IsDoneRes struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
