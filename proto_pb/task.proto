@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package proto_pb;
+option go_package = "/proto_pb";
+
+service UserService {
+    rpc AddUser(UserReq) returns (UserRes) {};
+    rpc UpdateUser(UpdateReq) returns (UserRes){};
+    rpc AddActivity(ActivityReq) returns (ActivityRes) {};
+    rpc IsValid(IsValidReq) returns (IsValidRes) {};
+    rpc IsDone(IsDoneReq) returns (IsDoneRes) {};
+}
+
+message User {
+    string Name = 1;
+    string Email = 2;
+    int64 Phone = 3;
+}
+
+message UserReq {
+    User User = 1;
+}
+
+message UserRes {
+    string Result = 1;
+}
+message UpdateReq {
+    User user = 1;
+}
+
+message Activity {
+    string ActivityType = 1;
+    string TimeStamp = 2;
+    int32 Duration = 3;
+    string Label = 4;
+    string Name = 5;
+}
+
+message ActivityReq {
+    Activity Activity = 1;
+}
+
+message ActivityRes{
+    string Result = 1;
+}
+
+message IsValidReq {
+    string Name = 1;
+    string ActivityType = 2;
+}
+
+message IsValidRes{
+    string Result = 1;
+}
+message IsDoneReq {
+    string Name = 1;
+    string ActivityType = 2;
+}
+
+message IsDoneRes{
+    bool Result = 1;
+
+}
+
