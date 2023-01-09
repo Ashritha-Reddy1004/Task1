@@ -3,6 +3,7 @@ syntax = "proto3";
 package proto_pb;
 option go_package = "/proto_pb";
 
+//User services
 service UserService {
     rpc AddUser(UserReq) returns (UserRes) {};
     rpc UpdateUser(UpdateReq) returns (UserRes){};
@@ -11,23 +12,29 @@ service UserService {
     rpc IsDone(IsDoneReq) returns (IsDoneRes) {};
 }
 
+//User attributes
 message User {
     string Name = 1;
     string Email = 2;
     int64 Phone = 3;
 }
 
+//User Request
 message UserReq {
     User User = 1;
 }
 
+//User Response
 message UserRes {
     string Result = 1;
 }
+
+//User Update Request
 message UpdateReq {
     User user = 1;
 }
 
+//User Activity Attributes
 message Activity {
     string ActivityType = 1;
     string TimeStamp = 2;
@@ -36,27 +43,34 @@ message Activity {
     string Name = 5;
 }
 
+//User Activity Request
 message ActivityReq {
     Activity Activity = 1;
 }
 
+//User Acivity Response
 message ActivityRes{
     string Result = 1;
 }
 
+//Activity Validation Request
 message IsValidReq {
     string Name = 1;
     string ActivityType = 2;
 }
 
+//Activity Validation Response
 message IsValidRes{
     string Result = 1;
 }
+
+//Activity status request
 message IsDoneReq {
     string Name = 1;
     string ActivityType = 2;
 }
 
+//Activity status response
 message IsDoneRes{
     bool Result = 1;
 

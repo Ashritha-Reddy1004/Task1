@@ -1,5 +1,6 @@
 package main
 
+//importing required packages
 import (
 	"context"
 	"fmt"
@@ -17,6 +18,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// To handle errors
 func handleError(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -27,6 +29,7 @@ type server struct {
 	proto_pb.UnimplementedUserServiceServer
 }
 
+// Server side user items
 type user_item struct {
 	Id    primitive.ObjectID `bson:"_id,omitempty"`
 	Name  string             `bson:"name"`
@@ -34,15 +37,17 @@ type user_item struct {
 	Phone int64              `bson:"phone"`
 }
 
+// server side activity items
 type activity_item struct {
 	Id           primitive.ObjectID `bson:"_id,omitempty"`
 	ActivityType string             `bson:"activity_type"`
 	Duration     int32              `bson:"duration"`
 	Label        string             `bson:"label"`
 	Timestamp    string             `bson:"timestamp"`
-	Email        string             `bson:"email"`
+	Name         string             `bson:"name"`
 }
 
+// Function to push the user [server side]
 func PushUser(ctx context.Context, item user_item) string {
 	Name := item.Name
 	filter := bson.M{
@@ -65,12 +70,14 @@ func PushUser(ctx context.Context, item user_item) string {
 	return result
 }
 
+// Function to push user activity [server side]
 func PushActivity(ctx context.Context, item activity_item) string {
 	collection.InsertOne(ctx, item)
 	result := "Activity inserted"
 	return result
 }
 
+// Function to add users [server side]
 func (*server) AddUser(ctx context.Context, req *proto_pb.UserReq) (*proto_pb.UserRes, error) {
 	fmt.Println(req)
 	name := req.GetUser().GetName()
@@ -91,19 +98,40 @@ func (*server) AddUser(ctx context.Context, req *proto_pb.UserReq) (*proto_pb.Us
 	return &userAddResponse, nil
 }
 
+// Function to update user data [server side]
+func (*server) UpdateUser(ctx context.Context, req *proto_pb.UpdateReq) (*proto_pb.UserRes, error) {
+	username := req.User.Name
+	phone := req.User.Phone
+	email := req.User.Email
+
+	filter := bson.M{
+		"email": email,
+	}
+	update := bson.D{{"$set", bson.D{{"email", email}, {"phone", phone}, {"username", username}}}}
+	_, err := collection.UpdateOne(context.Background(), filter, update)
+	fmt.Println("user has been updated:", username, phone, email)
+	handleError(err)
+	result := &proto_pb.UserRes{
+		Result: fmt.Sprintf("The user has been updated to %v.", username),
+	}
+
+	return result, nil
+}
+
+// Function to add user activity [server side]
 func (*server) AddActivity(ctx context.Context, req *proto_pb.ActivityReq) (*proto_pb.ActivityRes, error) {
 	fmt.Println(req)
 	activity_type := req.GetActivity().GetActivityType()
 	duration := req.GetActivity().GetDuration()
 	label := req.GetActivity().GetLabel()
 	timestamp := req.GetActivity().GetTimeStamp()
-	// email := req.GetActivity().GetEmail()
+	name := req.GetActivity().GetName()
 	newActivityItem := activity_item{
 		ActivityType: activity_type,
 		Duration:     duration,
 		Label:        label,
 		Timestamp:    timestamp,
-		// Email:        email,
+		Name:         name,
 	}
 	dbres := PushActivity(ctx, newActivityItem)
 	result := fmt.Sprintf("%v", dbres)
@@ -113,8 +141,9 @@ func (*server) AddActivity(ctx context.Context, req *proto_pb.ActivityReq) (*pro
 	}
 
 	return &AddActivityRes, nil
-
 }
+
+// Function to verify whether the activity is done or not [server side]
 func (*server) IsDone(ctx context.Context, req *proto_pb.IsDoneReq) (*proto_pb.IsDoneRes, error) {
 	name := req.Name
 	ActivityType := req.ActivityType
@@ -128,6 +157,7 @@ func (*server) IsDone(ctx context.Context, req *proto_pb.IsDoneReq) (*proto_pb.I
 	return result, nil
 }
 
+// Function to verify whether the activity to check it is valid or not [server side]
 func (*server) IsValid(ctx context.Context, req *proto_pb.IsValidReq) (*proto_pb.IsValidRes, error) {
 	fmt.Println(req)
 	name := req.GetName()
@@ -157,6 +187,7 @@ func (*server) IsValid(ctx context.Context, req *proto_pb.IsValidReq) (*proto_pb
 	return &IsValidRes, nil
 }
 
+// To get the environment variables
 func goDotEnvVariable(key string) string {
 	err := godotenv.Load(".env")
 
@@ -165,6 +196,7 @@ func goDotEnvVariable(key string) string {
 	return os.Getenv(key)
 }
 
+// main function
 var collection *mongo.Collection
 
 func main() {
@@ -183,7 +215,7 @@ func main() {
 			handleError(err)
 		}
 	}()
-
+	//To establish remote connection
 	mongo_uri := goDotEnvVariable("MONGODB_URI")
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongo_uri))
 	handleError(err)
