@@ -225,7 +225,7 @@ func main() {
 	err = client.Connect(context.TODO())
 	handleError(err)
 
-	collection = client.Database("useractivity").Collection("useractivitydata")
+	collection = client.Database("UserActivity").Collection("UserActivityData")
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt)

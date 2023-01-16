@@ -10,6 +10,9 @@ service UserService {
     rpc AddActivity(ActivityReq) returns (ActivityRes) {};
     rpc IsValid(IsValidReq) returns (IsValidRes) {};
     rpc IsDone(IsDoneReq) returns (IsDoneRes) {};
+    rpc RemoveUser(RemoveUserReq)returns (RemoveUserRes){};
+    rpc PrintUser(PrintUserReq)returns(PrintUserRes){};
+    rpc PrintActvity(PrintActivityReq)returns(PrintActivityRes){};
 }
 
 //User attributes
@@ -34,6 +37,27 @@ message UpdateReq {
     User user = 1;
 }
 
+//Remove User Request
+message RemoveUserReq{
+    string Name=1;
+}
+ 
+//Remove User Response
+message RemoveUserRes{
+    string Result=1;
+}
+
+//Print User Details Request 
+message PrintUserReq{
+    string Name=1;
+}
+
+//Print User Details Response
+message PrintUserRes{
+    bool Status=1;
+    User user=2;
+}
+
 //User Activity Attributes
 message Activity {
     string ActivityType = 1;
@@ -51,6 +75,16 @@ message ActivityReq {
 //User Acivity Response
 message ActivityRes{
     string Result = 1;
+}
+//Request to Print Activity 
+message PrintActivityReq{
+    string Name=1;
+}
+
+//Response to Print Activity
+message PrintActivityRes{
+    bool Status=1;
+    Activity Activity = 1;
 }
 
 //Activity Validation Request
