@@ -84,7 +84,7 @@ message PrintActivityReq{
 //Response to Print Activity
 message PrintActivityRes{
     bool Status=1;
-    Activity Activity = 1;
+    Activity Activity = 2;
 }
 
 //Activity Validation Request
