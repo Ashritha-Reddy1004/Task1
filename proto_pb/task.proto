@@ -12,7 +12,7 @@ service UserService {
     rpc IsDone(IsDoneReq) returns (IsDoneRes) {};
     rpc RemoveUser(RemoveUserReq)returns (RemoveUserRes){};
     rpc PrintUser(PrintUserReq)returns(PrintUserRes){};
-    rpc PrintActvity(PrintActivityReq)returns(PrintActivityRes){};
+    rpc PrintActivity(PrintActivityReq)returns(PrintActivityRes){};
 }
 
 //User attributes
