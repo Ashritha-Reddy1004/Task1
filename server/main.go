@@ -55,7 +55,7 @@ func PushUser(ctx context.Context, item user_item) string {
 	}
 
 	var result_data []user_item
-	cursor, err := collection.Find(context.TODO(), filter)
+	cursor, err := user_collection.Find(context.TODO(), filter)
 	handleError(err)
 
 	cursor.All(context.Background(), &result_data)
@@ -65,14 +65,14 @@ func PushUser(ctx context.Context, item user_item) string {
 		return result
 	}
 
-	collection.InsertOne(ctx, item)
+	user_collection.InsertOne(ctx, item)
 	result := "User added"
 	return result
 }
 
 // Function to push user activity [server side]
 func PushActivity(ctx context.Context, item activity_item) string {
-	collection.InsertOne(ctx, item)
+	activity_collection.InsertOne(ctx, item)
 	result := "Activity inserted"
 	return result
 }
@@ -96,26 +96,6 @@ func (*server) AddUser(ctx context.Context, req *proto_pb.UserReq) (*proto_pb.Us
 		Result: result,
 	}
 	return &userAddResponse, nil
-}
-
-// Function to update user data [server side]
-func (*server) UpdateUser(ctx context.Context, req *proto_pb.UpdateReq) (*proto_pb.UserRes, error) {
-	username := req.User.Name
-	phone := req.User.Phone
-	email := req.User.Email
-
-	filter := bson.M{
-		"email": email,
-	}
-	update := bson.D{{"$set", bson.D{{"email", email}, {"phone", phone}, {"username", username}}}}
-	_, err := collection.UpdateOne(context.Background(), filter, update)
-	fmt.Println("user has been updated:", username, phone, email)
-	handleError(err)
-	result := &proto_pb.UserRes{
-		Result: fmt.Sprintf("The user has been updated to %v.", username),
-	}
-
-	return result, nil
 }
 
 // Function to add user activity [server side]
@@ -157,6 +137,81 @@ func (*server) IsDone(ctx context.Context, req *proto_pb.IsDoneReq) (*proto_pb.I
 	return result, nil
 }
 
+// Function to update user records
+func (*server) UpdateUser(ctx context.Context, req *proto_pb.UpdateReq) (*proto_pb.UpdateRes, error) {
+	fmt.Println(req)
+	email := req.GetUser().GetEmail()
+	name := req.GetUser().GetName()
+	phone := req.GetUser().GetPhone()
+
+	filter := bson.M{
+		"Name": name,
+	}
+
+	update := bson.D{{"$set", bson.D{{"email", email}, {"name", name}, {"phone", phone}}}}
+	_, err := user_collection.UpdateOne(context.Background(), filter, update)
+
+	handleError(err)
+	result := "User details updated"
+
+	updateUserResponse := proto_pb.UpdateRes{
+		Result: result,
+	}
+	return &updateUserResponse, nil
+}
+
+// Function to remove user records
+func (*server) RemoveUser(ctx context.Context, req *proto_pb.RemoveUserReq) (*proto_pb.RemoveUserRes, error) {
+	fmt.Println(req)
+	Name := req.GetName()
+	filter := bson.M{
+		"Name": Name,
+	}
+	r, err := user_collection.DeleteOne(context.TODO(), filter)
+	handleError(err)
+	var result string
+	if r.DeletedCount == 0 {
+		result = "User record does not exist"
+	} else {
+		result = "User record deleted"
+	}
+	removeUserResponse := proto_pb.RemoveUserRes{
+		Result: result,
+	}
+	return &removeUserResponse, nil
+}
+
+// Function to print the activity details
+func (*server) PrintActivity(ctx context.Context, req *proto_pb.PrintActivityReq) (*proto_pb.PrintActivityRes, error) {
+	fmt.Println(req)
+	name := req.GetName()
+	filter := bson.M{
+		"name": name,
+	}
+	var result_data []activity_item
+	cursor, err := activity_collection.Find(context.TODO(), filter)
+	handleError(err)
+	cursor.All(context.Background(), &result_data)
+	if len(result_data) == 0 {
+		getActivityResponse := proto_pb.PrintActivityRes{
+			Status:   false,
+			Activity: nil,
+		}
+		return &getActivityResponse, nil
+	} else {
+		getActivityResponse := proto_pb.PrintActivityRes{
+			Status: true,
+			Activity: &proto_pb.Activity{
+				ActivityType: result_data[0].ActivityType,
+				TimeStamp:    result_data[0].Timestamp,
+				Duration:     result_data[0].Duration,
+				Label:        result_data[0].Label,
+			},
+		}
+		return &getActivityResponse, nil
+	}
+}
+
 // Function to verify whether the activity to check it is valid or not [server side]
 func (*server) IsValid(ctx context.Context, req *proto_pb.IsValidReq) (*proto_pb.IsValidRes, error) {
 	fmt.Println(req)
@@ -167,7 +222,7 @@ func (*server) IsValid(ctx context.Context, req *proto_pb.IsValidReq) (*proto_pb
 		"activity_type": activity_type,
 	}
 	var result_data []activity_item
-	cursor, err := collection.Find(context.Background(), filter)
+	cursor, err := activity_collection.Find(context.Background(), filter)
 	handleError(err)
 	cursor.All(context.Background(), &result_data)
 	var result string
@@ -196,8 +251,39 @@ func goDotEnvVariable(key string) string {
 	return os.Getenv(key)
 }
 
+// Print user details
+func (*server) PrintUser(ctx context.Context, req *proto_pb.PrintUserReq) (*proto_pb.PrintUserRes, error) {
+	fmt.Println(req)
+	Name := req.GetName()
+	filter := bson.M{
+		"Name": Name,
+	}
+	var result_data []user_item
+	cursor, err := user_collection.Find(context.TODO(), filter)
+	handleError(err)
+	cursor.All(context.Background(), &result_data)
+	if len(result_data) == 0 {
+		getUserResponse := proto_pb.PrintUserRes{
+			Status: false,
+			User:   nil,
+		}
+		return &getUserResponse, nil
+	} else {
+		getUserResponse := proto_pb.PrintUserRes{
+			Status: true,
+			User: &proto_pb.User{
+				Email: result_data[0].Email,
+				Name:  result_data[0].Name,
+				Phone: result_data[0].Phone,
+			},
+		}
+		return &getUserResponse, nil
+	}
+}
+
 // main function
-var collection *mongo.Collection
+var user_collection *mongo.Collection
+var activity_collection *mongo.Collection
 
 func main() {
 	godotenv.Load(".env")
@@ -225,7 +311,9 @@ func main() {
 	err = client.Connect(context.TODO())
 	handleError(err)
 
-	collection = client.Database("UserActivity").Collection("UserActivityData")
+	user_collection = client.Database("useractivity").Collection("userdata")
+
+	activity_collection = client.Database("UserActivity").Collection("UserActivityData")
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt)

@@ -6,7 +6,7 @@ option go_package = "/proto_pb";
 //User services
 service UserService {
     rpc AddUser(UserReq) returns (UserRes) {};
-    rpc UpdateUser(UpdateReq) returns (UserRes){};
+    rpc UpdateUser(UpdateReq) returns (UpdateRes){};
     rpc AddActivity(ActivityReq) returns (ActivityRes) {};
     rpc IsValid(IsValidReq) returns (IsValidRes) {};
     rpc IsDone(IsDoneReq) returns (IsDoneRes) {};
@@ -35,6 +35,10 @@ message UserRes {
 //User Update Request
 message UpdateReq {
     User user = 1;
+}
+
+message UpdateRes {
+    string result = 1;
 }
 
 //Remove User Request
@@ -84,7 +88,7 @@ message PrintActivityReq{
 //Response to Print Activity
 message PrintActivityRes{
     bool Status=1;
-    Activity Activity = 1;
+    Activity Activity = 2;
 }
 
 //Activity Validation Request
