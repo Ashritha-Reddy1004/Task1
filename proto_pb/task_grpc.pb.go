@@ -23,10 +23,13 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	AddUser(ctx context.Context, in *UserReq, opts ...grpc.CallOption) (*UserRes, error)
-	UpdateUser(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserRes, error)
+	UpdateUser(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UpdateRes, error)
 	AddActivity(ctx context.Context, in *ActivityReq, opts ...grpc.CallOption) (*ActivityRes, error)
 	IsValid(ctx context.Context, in *IsValidReq, opts ...grpc.CallOption) (*IsValidRes, error)
 	IsDone(ctx context.Context, in *IsDoneReq, opts ...grpc.CallOption) (*IsDoneRes, error)
+	RemoveUser(ctx context.Context, in *RemoveUserReq, opts ...grpc.CallOption) (*RemoveUserRes, error)
+	PrintUser(ctx context.Context, in *PrintUserReq, opts ...grpc.CallOption) (*PrintUserRes, error)
+	PrintActvity(ctx context.Context, in *PrintActivityReq, opts ...grpc.CallOption) (*PrintActivityRes, error)
 }
 
 type userServiceClient struct {
@@ -46,8 +49,8 @@ func (c *userServiceClient) AddUser(ctx context.Context, in *UserReq, opts ...gr
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UserRes, error) {
-	out := new(UserRes)
+func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateReq, opts ...grpc.CallOption) (*UpdateRes, error) {
+	out := new(UpdateRes)
 	err := c.cc.Invoke(ctx, "/proto_pb.UserService/UpdateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -82,15 +85,45 @@ func (c *userServiceClient) IsDone(ctx context.Context, in *IsDoneReq, opts ...g
 	return out, nil
 }
 
+func (c *userServiceClient) RemoveUser(ctx context.Context, in *RemoveUserReq, opts ...grpc.CallOption) (*RemoveUserRes, error) {
+	out := new(RemoveUserRes)
+	err := c.cc.Invoke(ctx, "/proto_pb.UserService/RemoveUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) PrintUser(ctx context.Context, in *PrintUserReq, opts ...grpc.CallOption) (*PrintUserRes, error) {
+	out := new(PrintUserRes)
+	err := c.cc.Invoke(ctx, "/proto_pb.UserService/PrintUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) PrintActvity(ctx context.Context, in *PrintActivityReq, opts ...grpc.CallOption) (*PrintActivityRes, error) {
+	out := new(PrintActivityRes)
+	err := c.cc.Invoke(ctx, "/proto_pb.UserService/PrintActvity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
 	AddUser(context.Context, *UserReq) (*UserRes, error)
-	UpdateUser(context.Context, *UpdateReq) (*UserRes, error)
+	UpdateUser(context.Context, *UpdateReq) (*UpdateRes, error)
 	AddActivity(context.Context, *ActivityReq) (*ActivityRes, error)
 	IsValid(context.Context, *IsValidReq) (*IsValidRes, error)
 	IsDone(context.Context, *IsDoneReq) (*IsDoneRes, error)
+	RemoveUser(context.Context, *RemoveUserReq) (*RemoveUserRes, error)
+	PrintUser(context.Context, *PrintUserReq) (*PrintUserRes, error)
+	PrintActvity(context.Context, *PrintActivityReq) (*PrintActivityRes, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -101,7 +134,7 @@ type UnimplementedUserServiceServer struct {
 func (UnimplementedUserServiceServer) AddUser(context.Context, *UserReq) (*UserRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddUser not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateReq) (*UserRes, error) {
+func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateReq) (*UpdateRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedUserServiceServer) AddActivity(context.Context, *ActivityReq) (*ActivityRes, error) {
@@ -112,6 +145,15 @@ func (UnimplementedUserServiceServer) IsValid(context.Context, *IsValidReq) (*Is
 }
 func (UnimplementedUserServiceServer) IsDone(context.Context, *IsDoneReq) (*IsDoneRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsDone not implemented")
+}
+func (UnimplementedUserServiceServer) RemoveUser(context.Context, *RemoveUserReq) (*RemoveUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveUser not implemented")
+}
+func (UnimplementedUserServiceServer) PrintUser(context.Context, *PrintUserReq) (*PrintUserRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrintUser not implemented")
+}
+func (UnimplementedUserServiceServer) PrintActvity(context.Context, *PrintActivityReq) (*PrintActivityRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrintActvity not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -216,6 +258,60 @@ func _UserService_IsDone_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_RemoveUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RemoveUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto_pb.UserService/RemoveUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RemoveUser(ctx, req.(*RemoveUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_PrintUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PrintUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).PrintUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto_pb.UserService/PrintUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).PrintUser(ctx, req.(*PrintUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_PrintActvity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PrintActivityReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).PrintActvity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto_pb.UserService/PrintActvity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).PrintActvity(ctx, req.(*PrintActivityReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +338,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IsDone",
 			Handler:    _UserService_IsDone_Handler,
+		},
+		{
+			MethodName: "RemoveUser",
+			Handler:    _UserService_RemoveUser_Handler,
+		},
+		{
+			MethodName: "PrintUser",
+			Handler:    _UserService_PrintUser_Handler,
+		},
+		{
+			MethodName: "PrintActvity",
+			Handler:    _UserService_PrintActvity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
