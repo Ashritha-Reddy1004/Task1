@@ -29,7 +29,7 @@ type UserServiceClient interface {
 	IsDone(ctx context.Context, in *IsDoneReq, opts ...grpc.CallOption) (*IsDoneRes, error)
 	RemoveUser(ctx context.Context, in *RemoveUserReq, opts ...grpc.CallOption) (*RemoveUserRes, error)
 	PrintUser(ctx context.Context, in *PrintUserReq, opts ...grpc.CallOption) (*PrintUserRes, error)
-	PrintActvity(ctx context.Context, in *PrintActivityReq, opts ...grpc.CallOption) (*PrintActivityRes, error)
+	PrintActivity(ctx context.Context, in *PrintActivityReq, opts ...grpc.CallOption) (*PrintActivityRes, error)
 }
 
 type userServiceClient struct {
@@ -103,9 +103,9 @@ func (c *userServiceClient) PrintUser(ctx context.Context, in *PrintUserReq, opt
 	return out, nil
 }
 
-func (c *userServiceClient) PrintActvity(ctx context.Context, in *PrintActivityReq, opts ...grpc.CallOption) (*PrintActivityRes, error) {
+func (c *userServiceClient) PrintActivity(ctx context.Context, in *PrintActivityReq, opts ...grpc.CallOption) (*PrintActivityRes, error) {
 	out := new(PrintActivityRes)
-	err := c.cc.Invoke(ctx, "/proto_pb.UserService/PrintActvity", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto_pb.UserService/PrintActivity", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ type UserServiceServer interface {
 	IsDone(context.Context, *IsDoneReq) (*IsDoneRes, error)
 	RemoveUser(context.Context, *RemoveUserReq) (*RemoveUserRes, error)
 	PrintUser(context.Context, *PrintUserReq) (*PrintUserRes, error)
-	PrintActvity(context.Context, *PrintActivityReq) (*PrintActivityRes, error)
+	PrintActivity(context.Context, *PrintActivityReq) (*PrintActivityRes, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -152,8 +152,8 @@ func (UnimplementedUserServiceServer) RemoveUser(context.Context, *RemoveUserReq
 func (UnimplementedUserServiceServer) PrintUser(context.Context, *PrintUserReq) (*PrintUserRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrintUser not implemented")
 }
-func (UnimplementedUserServiceServer) PrintActvity(context.Context, *PrintActivityReq) (*PrintActivityRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PrintActvity not implemented")
+func (UnimplementedUserServiceServer) PrintActivity(context.Context, *PrintActivityReq) (*PrintActivityRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrintActivity not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -294,20 +294,20 @@ func _UserService_PrintUser_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_PrintActvity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_PrintActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PrintActivityReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).PrintActvity(ctx, in)
+		return srv.(UserServiceServer).PrintActivity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto_pb.UserService/PrintActvity",
+		FullMethod: "/proto_pb.UserService/PrintActivity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).PrintActvity(ctx, req.(*PrintActivityReq))
+		return srv.(UserServiceServer).PrintActivity(ctx, req.(*PrintActivityReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -348,8 +348,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_PrintUser_Handler,
 		},
 		{
-			MethodName: "PrintActvity",
-			Handler:    _UserService_PrintActvity_Handler,
+			MethodName: "PrintActivity",
+			Handler:    _UserService_PrintActivity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
