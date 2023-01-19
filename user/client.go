@@ -12,7 +12,7 @@ import (
 )
 
 // Main function to call rest of the functions
-func Main() {
+func main() {
 	//Connection establishment with the database
 	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	fmt.Println("The start time is :")
